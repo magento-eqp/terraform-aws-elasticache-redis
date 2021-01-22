@@ -62,20 +62,6 @@ resource "aws_elasticache_subnet_group" "default" {
   subnet_ids = var.subnets
 }
 
-resource "aws_elasticache_parameter_group" "default" {
-  count  = module.this.enabled ? 1 : 0
-  name   = module.this.id
-  family = var.family
-
-  dynamic "parameter" {
-    for_each = var.cluster_mode_enabled ? concat([{ name = "cluster-enabled", value = "yes" }], var.parameter) : var.parameter
-    content {
-      name  = parameter.value.name
-      value = parameter.value.value
-    }
-  }
-}
-
 resource "aws_elasticache_replication_group" "default" {
   count = module.this.enabled ? 1 : 0
 
@@ -85,7 +71,7 @@ resource "aws_elasticache_replication_group" "default" {
   node_type                     = var.instance_type
   number_cache_clusters         = var.cluster_mode_enabled ? null : var.cluster_size
   port                          = var.port
-  parameter_group_name          = join("", aws_elasticache_parameter_group.default.*.name)
+  parameter_group_name          = var.parameter_group_name
   availability_zones            = var.cluster_mode_enabled ? null : slice(var.availability_zones, 0, var.cluster_size)
   automatic_failover_enabled    = var.automatic_failover_enabled
   subnet_group_name             = local.elasticache_subnet_group_name
