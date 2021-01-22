@@ -216,3 +216,8 @@ variable egress_cidr_blocks {
   default     = ["0.0.0.0/0"]
   description = "Outbound traffic address"
 }
+
+variable parameter_group_name {
+  type = string
+  description = "(Optional) The name of the parameter group to associate with this replication group. If this argument is omitted, the default cache parameter group for the specified engine is used. To enable \"cluster mode\", i.e. data sharding, use a parameter group that has the parameter cluster-enabled set to true."
+}
